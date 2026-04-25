@@ -29,9 +29,6 @@ const registerUser = async (_: any, formData: FormData) => {
     }
 }
 
-const signOutUser = async()=>{
-    await signOut(); // must be in server action or route handler
-}
 
 
-export { registerUser, signOutUser };
+export { registerUser };

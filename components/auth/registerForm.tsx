@@ -1,5 +1,5 @@
 "use client";
-import { registerUser } from "@/actions/auth/auth-actions";
+import { registerUser } from "@/actions/auth";
 import { displaySuccess, displayError } from "@/lib/toast";
 import { startTransition, useActionState, useEffect, useRef } from "react";
 
