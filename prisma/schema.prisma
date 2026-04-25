@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  student
+  instructor
+}
+
+model User {
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  password         String            
+  role             Role             @default(student)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  enrollments      Enrollment[]
+  courses          Course[]         @relation("InstructorCourses")
+  lessonProgresses LessonProgress[]
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  instructorId String
+  instructor   User         @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+  enrollments  Enrollment[]
+  lessons      Lesson[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+model Lesson {
+  id               String           @id @default(uuid())
+  title            String
+  videoUrl         String
+  position         Int
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  courseId         String
+  course           Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgresses LessonProgress[]
+
+  @@unique([courseId, position])
+}
+
+model LessonProgress {
+  id       String @id @default(uuid())
+  userId   String
+  lessonId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
