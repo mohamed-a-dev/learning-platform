@@ -1,6 +1,6 @@
 'use server'
 import { UserForm } from "@/types/user";
-import { createUser } from "@/services/auth/register";
+import { createUser } from "@/services/auth";
 import { registerSchema } from "@/lib/auth/validation";
 import { signOut } from "@/auth";
 

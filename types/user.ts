@@ -5,3 +5,7 @@ export interface UserForm {
     role: string;
 }
 
+export interface EditUser {
+    name: string;
+    password: string;
+}
