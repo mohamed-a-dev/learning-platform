@@ -27,7 +27,7 @@ model User {
   updatedAt        DateTime         @updatedAt
   enrollments      Enrollment[]
   courses          Course[]         @relation("InstructorCourses")
-  lessonProgresses LessonProgress[]
+  LessonsCompleted LessonCompleted[]
 }
 
 model Course {
@@ -63,12 +63,12 @@ model Lesson {
   updatedAt        DateTime         @updatedAt
   courseId         String
   course           Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessonProgresses LessonProgress[]
+  LessonsCompleted LessonCompleted[]
 
   @@unique([courseId, position])
 }
 
-model LessonProgress {
+model LessonCompleted {
   id       String @id @default(uuid())
   userId   String
   lessonId String

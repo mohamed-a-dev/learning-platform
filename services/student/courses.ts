@@ -14,7 +14,7 @@ const getCoursesCount = async (studentId: string) => {
 
 
 const getCompletedLessonsCount = async (studentId: string) => {
-    const completedCount = await prisma.lessonProgress.count({
+    const completedCount = await prisma.lessonCompleted.count({
         where: {
             userId: studentId
         }
@@ -53,10 +53,9 @@ const getStudentCourses = async (studentId: string) => {
 }
 
 // set lesson as completed
-const createLessonProgress = async (studentId: string, lessonId: string) => {
+const createLessonCompleted = async (studentId: string, lessonId: string) => {
     const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId },
-        include: { course: true }
     });
 
     if (!lesson) {
@@ -74,7 +73,7 @@ const createLessonProgress = async (studentId: string, lessonId: string) => {
         throw new Error("User not enrolled in this course");
     }
 
-    return await prisma.lessonProgress.create({
+    return await prisma.lessonCompleted.create({
         data: {
             userId: studentId,
             lessonId
@@ -90,7 +89,7 @@ const getNextLessonToContinue = async (studentId: string, courseId: string) => {
         orderBy: { position: "asc" }
     });
 
-    const completedLessons = await prisma.lessonProgress.findMany({
+    const completedLessons = await prisma.lessonCompleted.findMany({
         where: {
             userId: studentId,
             lesson: {
@@ -109,4 +108,4 @@ const getNextLessonToContinue = async (studentId: string, courseId: string) => {
     return nextLesson;
 };
 
-export { getCoursesCount, getCompletedLessonsCount, getCourses, createEnrollment, getStudentCourses, getNextLessonToContinue, createLessonProgress }
+export { getCoursesCount, getCompletedLessonsCount, getCourses, createEnrollment, getStudentCourses, getNextLessonToContinue, createLessonCompleted }
