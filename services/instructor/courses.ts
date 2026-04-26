@@ -1,6 +1,6 @@
 'use server'
 import prisma from "@/lib/prisma"
-import { CreateCourse, EditCourse } from "@/types/course";
+import { CreateCourse, EditCourse, EditLesson } from "@/types/course";
 
 // ------------------------------------dashboard page------------------------------------
 // count of all instrutor courses
@@ -95,5 +95,67 @@ const deleteCourse = async (instructorId: string, courseId: string) => {
     return deletedCourse;
 }
 
+// ------------------------------------Course page | lesson page ------------------------------------
+// user --> course --> lesson
+const deleteLesson = async (instructorId: string, lessonId: string) => {
+    const lesson = await prisma.lesson.findUnique({
+        where: {
+            id: lessonId
+        },
+        select: {
+            course: {
+                select: {
+                    instructorId: true
+                }
+            }
+        }
+    });
 
-export { getCoursesCount, getStudentsCount, getLessonsCount, createCourse, getCourses, editCourse, deleteCourse, }
+    if (!lesson)
+        throw new Error('Lesson not found');
+
+    if (lesson.course.instructorId !== instructorId)
+        throw new Error("Not authorized to delete this lesson");
+
+    const deletedLesson = await prisma.lesson.delete({
+        where: {
+            id: lessonId
+        }
+    })
+
+    return deletedLesson;
+}
+
+
+const editLesson = async (instructorId: string, lessonId: string, data: EditLesson) => {
+    const lesson = await prisma.lesson.findUnique({
+        where: {
+            id: lessonId
+        },
+        select: {
+            course: {
+                select: {
+                    instructorId: true
+                }
+            }
+        }
+    });
+
+    if (!lesson)
+        throw new Error('Lesson Not found');
+
+    if (lesson.course.instructorId !== instructorId)
+        throw new Error("Not authorized to edit this lesson");
+
+    const editedLesson = await prisma.lesson.update({
+        where: {
+            id: lessonId
+        },
+        data: data,
+    });
+
+    return editedLesson;
+}
+
+
+export { getCoursesCount, getStudentsCount, getLessonsCount, createCourse, getCourses, editCourse, deleteCourse, deleteLesson, editLesson }

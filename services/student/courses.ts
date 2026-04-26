@@ -52,6 +52,7 @@ const getStudentCourses = async (studentId: string) => {
     return enrollments.map((obj) => obj.course);
 }
 
+// ------------------------------------Course page------------------------------------
 // set lesson as completed
 const createLessonCompleted = async (studentId: string, lessonId: string) => {
     const lesson = await prisma.lesson.findUnique({
@@ -73,16 +74,17 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
         throw new Error("User not enrolled in this course");
     }
 
-    return await prisma.lessonCompleted.create({
+    const createdCompletedLesson = await prisma.lessonCompleted.create({
         data: {
             userId: studentId,
             lessonId
         }
     });
+    return createdCompletedLesson;
 };
 
 
-// get next lesson order(position)
+// get next lesson order(position) | continue button
 const getNextLessonToContinue = async (studentId: string, courseId: string) => {
     const lessons = await prisma.lesson.findMany({
         where: { courseId },
@@ -101,11 +103,11 @@ const getNextLessonToContinue = async (studentId: string, courseId: string) => {
         }
     });
 
-    const completedSet = new Set(completedLessons.map(l => l.lessonId));
+    const completedLessonsSet = new Set(completedLessons.map(l => l.lessonId));
 
-    const nextLesson = lessons.find(lesson => !completedSet.has(lesson.id));
+    const nextLessonId = lessons.find(lesson => !completedLessonsSet.has(lesson.id));
 
-    return nextLesson;
+    return nextLessonId;
 };
 
 export { getCoursesCount, getCompletedLessonsCount, getCourses, createEnrollment, getStudentCourses, getNextLessonToContinue, createLessonCompleted }
