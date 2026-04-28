@@ -2,7 +2,7 @@
 import { UserForm } from "@/types/user";
 import { createUser } from "@/services/auth";
 import { registerSchema } from "@/lib/auth/validation";
-import { signOut } from "@/auth";
+import { errorHandler } from "@/lib/prismaErrors";
 
 const registerUser = async (_: any, formData: FormData) => {
     const form: UserForm = {
@@ -20,15 +20,11 @@ const registerUser = async (_: any, formData: FormData) => {
     // form data is valid 
     try {
         const user = await createUser(form);
-        return { success: true, user, timeStamp: Date.now() };
+        return { success: true, user, timestamp: Date.now() };
     } catch (error: any) {
-        if (error.code === 'P2002')
-            return { success: false, message: 'Email already exists', timestamp: Date.now() }
-        else
-            return { success: false, message: 'Something went wrong', timestamp: Date.now() }
+        return errorHandler(error);
     }
 }
-
 
 
 export { registerUser };
