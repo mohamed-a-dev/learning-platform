@@ -27,14 +27,14 @@ const getStudentsCount = async (instructorId: string) => {
 
 // count of all instructor lessons 
 const getLessonsCount = async (instructorId: string) => {
-    const studentsCount = await prisma.lesson.count({
+    const lessonsCount = await prisma.lesson.count({
         where: {
             course: {
                 instructorId
             }
         }
     });
-    return studentsCount;
+    return lessonsCount;
 };
 
 
@@ -65,7 +65,7 @@ const editCourse = async (instructorId: string, courseId: string, course: EditCo
     });
 
     if (!isFound)
-        throw new Error('Course not found');
+        throw { code: "P2025" };
 
     const editedCourse = await prisma.course.update({
         where: {
@@ -85,7 +85,7 @@ const deleteCourse = async (instructorId: string, courseId: string) => {
     });
 
     if (!isFound)
-        throw new Error('Course not found');
+        throw { code: "P2025" };
 
     const deletedCourse = await prisma.course.delete({
         where: {
@@ -112,10 +112,10 @@ const deleteLesson = async (instructorId: string, lessonId: string) => {
     });
 
     if (!lesson)
-        throw new Error('Lesson not found');
+        throw { code: "P2025" };
 
     if (lesson.course.instructorId !== instructorId)
-        throw new Error("Not authorized to delete this lesson");
+        throw { code: "FORBIDDEN", message: "Not authorized to delete this lesson" };
 
     const deletedLesson = await prisma.lesson.delete({
         where: {
@@ -145,7 +145,7 @@ const editLesson = async (instructorId: string, lessonId: string, data: EditLess
         throw new Error('Lesson Not found');
 
     if (lesson.course.instructorId !== instructorId)
-        throw new Error("Not authorized to edit this lesson");
+        throw { code: "FORBIDDEN", message: "Not authorized to edit this lesson" };
 
     const editedLesson = await prisma.lesson.update({
         where: {
@@ -158,4 +158,14 @@ const editLesson = async (instructorId: string, lessonId: string, data: EditLess
 }
 
 
-export { getCoursesCount, getStudentsCount, getLessonsCount, createCourse, getCourses, editCourse, deleteCourse, deleteLesson, editLesson }
+export {
+    getCoursesCount,
+    getStudentsCount,
+    getLessonsCount,
+    createCourse,
+    getCourses,
+    editCourse,
+    deleteCourse,
+    deleteLesson,
+    editLesson
+}

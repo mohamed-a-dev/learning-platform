@@ -1,5 +1,5 @@
 'use client'
-import { loginSchema } from '@/lib/auth/validation';
+import { loginSchema } from '@/lib/validation/auth-validation';
 import { displayError } from '@/lib/toast';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';

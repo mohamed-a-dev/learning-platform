@@ -1,7 +1,7 @@
 'use server'
 import { UserForm } from "@/types/user";
 import { createUser } from "@/services/auth";
-import { registerSchema } from "@/lib/auth/validation";
+import { registerSchema } from "@/lib/validation/auth-validation";
 import { errorHandler } from "@/lib/prismaErrors";
 
 const registerUser = async (_: any, formData: FormData) => {

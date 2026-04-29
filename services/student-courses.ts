@@ -1,5 +1,4 @@
 'use server'
-
 import prisma from "@/lib/prisma"
 
 // ------------------------------------dashboard page------------------------------------
@@ -14,12 +13,12 @@ const getCoursesCount = async (studentId: string) => {
 
 
 const getCompletedLessonsCount = async (studentId: string) => {
-    const completedCount = await prisma.lessonCompleted.count({
+    const completedLessonsCount = await prisma.lessonCompleted.count({
         where: {
             userId: studentId
         }
     });
-    return completedCount;
+    return completedLessonsCount;
 }
 
 // ------------------------------------Browse Courses page------------------------------------
@@ -60,7 +59,7 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
     });
 
     if (!lesson) {
-        throw new Error("Lesson not found");
+        throw { code: 'P2025' };
     }
 
     const isEnrolled = await prisma.enrollment.findFirst({
@@ -70,9 +69,8 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
         }
     });
 
-    if (!isEnrolled) {
-        throw new Error("User not enrolled in this course");
-    }
+    if (!isEnrolled)
+        throw { code: "FORBIDDEN", message: "User not enrolled in this course" };
 
     const createdCompletedLesson = await prisma.lessonCompleted.create({
         data: {
@@ -84,7 +82,7 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
 };
 
 
-// get next lesson order(position) | continue button
+// get next lesson | continue button
 const getNextLessonToContinue = async (studentId: string, courseId: string) => {
     const lessons = await prisma.lesson.findMany({
         where: { courseId },
@@ -105,9 +103,17 @@ const getNextLessonToContinue = async (studentId: string, courseId: string) => {
 
     const completedLessonsSet = new Set(completedLessons.map(l => l.lessonId));
 
-    const nextLessonId = lessons.find(lesson => !completedLessonsSet.has(lesson.id));
+    const nextLesson = lessons.find(lesson => !completedLessonsSet.has(lesson.id));
 
-    return nextLessonId;
+    return nextLesson;
 };
 
-export { getCoursesCount, getCompletedLessonsCount, getCourses, createEnrollment, getStudentCourses, getNextLessonToContinue, createLessonCompleted }
+export {
+    getCoursesCount,
+    getCompletedLessonsCount,
+    getCourses,
+    createEnrollment,
+    getStudentCourses,
+    getNextLessonToContinue,
+    createLessonCompleted
+}
