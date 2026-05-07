@@ -12,8 +12,15 @@ export const editCourseSchema = z.object({
     description: z.string().min(10, "Description too short").max(500, "Description too long"),
 });
 
+export const createLessonSchema = z.object({
+    title: z.string().min(2, "Title too short").max(100, "Title too long"),
+    videoUrl: z.url("Invalid video URL"),
+    courseId: z.uuid()
+
+});
 
 export const editLessonSchema = z.object({
     title: z.string().min(2, "Title too short").max(100, "Title too long"),
     videoUrl: z.url("Invalid video URL"),
 });
+

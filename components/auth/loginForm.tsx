@@ -1,6 +1,6 @@
 'use client'
-import { loginSchema } from '@/lib/validation/auth-validation';
 import { displayError } from '@/lib/toast';
+import { loginSchema } from '@/lib/validation/auth-validation';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'

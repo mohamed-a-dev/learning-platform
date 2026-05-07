@@ -1,8 +1,11 @@
 'use server'
+import { getSessionUserInfo } from "@/lib/authorization";
 import prisma from "@/lib/prisma"
 
 // ------------------------------------dashboard page------------------------------------
-const getCoursesCount = async (studentId: string) => {
+const getCoursesCount = async () => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const coursesCount = await prisma.enrollment.count({
         where: {
             userId: studentId
@@ -12,7 +15,9 @@ const getCoursesCount = async (studentId: string) => {
 }
 
 
-const getCompletedLessonsCount = async (studentId: string) => {
+const getCompletedLessonsCount = async () => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const completedLessonsCount = await prisma.lessonCompleted.count({
         where: {
             userId: studentId
@@ -22,23 +27,79 @@ const getCompletedLessonsCount = async (studentId: string) => {
 }
 
 // ------------------------------------Browse Courses page------------------------------------
-const getCourses = async () => {
-    const courses = await prisma.course.findMany();
-    return courses;
-}
+const getBrowseCourses = async () => {
+    const { id: studentId } = await getSessionUserInfo();
 
-const createEnrollment = async (studentId: string, courseId: string) => {
+    const courses = await prisma.course.findMany({
+        where: {
+            enrollments: {
+                none: {
+                    userId: studentId
+                }
+            }
+        },
+        orderBy: {
+            createdAt: "desc"
+        },
+        include: {
+            instructor: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+        }
+    });
+
+    return courses;
+};
+
+const createEnrollment = async (courseId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const enrollment = await prisma.enrollment.create({
         data: {
-            userId: studentId,
+            userId: studentId!,
             courseId,
         }
     });
     return enrollment;
 }
 
+const getEnrollment = async (courseId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
+    const enrollment = await prisma.enrollment.findFirst({
+        where: {
+            userId: studentId!,
+            courseId,
+        }
+    });
+
+    if (!enrollment)
+        return { isEnrolled: false }
+    return { isEnrolled: true };
+}
+
+const deleteEnrollment = async (courseId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
+    const enrollment = await prisma.enrollment.delete({
+        where: {
+            userId_courseId: {
+                userId: studentId!,
+                courseId,
+            }
+        }
+    });
+
+    return enrollment;
+}
+
 // ------------------------------------My Courses page------------------------------------
-const getStudentCourses = async (studentId: string) => {
+const getStudentCourses = async () => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const enrollments = await prisma.enrollment.findMany({
         where: {
             userId: studentId
@@ -53,7 +114,9 @@ const getStudentCourses = async (studentId: string) => {
 
 // ------------------------------------Course page------------------------------------
 // set lesson as completed
-const createLessonCompleted = async (studentId: string, lessonId: string) => {
+const createLessonCompleted = async (lessonId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId },
     });
@@ -74,7 +137,7 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
 
     const createdCompletedLesson = await prisma.lessonCompleted.create({
         data: {
-            userId: studentId,
+            userId: studentId!,
             lessonId
         }
     });
@@ -83,7 +146,9 @@ const createLessonCompleted = async (studentId: string, lessonId: string) => {
 
 
 // get next lesson | continue button
-const getNextLessonToContinue = async (studentId: string, courseId: string) => {
+const getNextLessonToContinue = async (courseId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
     const lessons = await prisma.lesson.findMany({
         where: { courseId },
         orderBy: { position: "asc" }
@@ -111,8 +176,10 @@ const getNextLessonToContinue = async (studentId: string, courseId: string) => {
 export {
     getCoursesCount,
     getCompletedLessonsCount,
-    getCourses,
+    getBrowseCourses,
     createEnrollment,
+    getEnrollment,
+    deleteEnrollment,
     getStudentCourses,
     getNextLessonToContinue,
     createLessonCompleted

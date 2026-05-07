@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
+import Providers from "./providers";
 
 
 export const metadata: Metadata = {
@@ -22,7 +23,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
         {/* OAuth Provider */}
         <SessionProvider>
-          {children}
+
+          {/* redux provider */}
+          <Providers>
+            {children}
+          </Providers>
+          
         </SessionProvider>
 
       </body>

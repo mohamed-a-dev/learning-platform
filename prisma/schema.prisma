@@ -17,16 +17,22 @@ enum Role {
   instructor
 }
 
+enum Gender {
+  male
+  female
+}
+
 model User {
-  id               String           @id @default(uuid())
+  id               String            @id @default(uuid())
   name             String
-  email            String           @unique
-  password         String            
-  role             Role             @default(student)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  email            String            @unique
+  password         String
+  role             Role              @default(student)
+  gender           Gender
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   enrollments      Enrollment[]
-  courses          Course[]         @relation("InstructorCourses")
+  courses          Course[]          @relation("InstructorCourses")
   LessonsCompleted LessonCompleted[]
 }
 
@@ -55,14 +61,14 @@ model Enrollment {
 }
 
 model Lesson {
-  id               String           @id @default(uuid())
+  id               String            @id @default(uuid())
   title            String
   videoUrl         String
   position         Int
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   courseId         String
-  course           Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course           Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
   LessonsCompleted LessonCompleted[]
 
   @@unique([courseId, position])

@@ -1,15 +1,16 @@
 'use server'
-import { UserForm } from "@/types/user";
-import { createUser } from "@/services/auth";
-import { registerSchema } from "@/lib/validation/auth-validation";
+import { createUser } from "@/services/auth-services";
 import { errorHandler } from "@/lib/prismaErrors";
+import { registerSchema } from "@/lib/validation/auth-validation";
+import { CreateUserForm } from "@/types/user";
 
 const registerUser = async (_: any, formData: FormData) => {
-    const form: UserForm = {
+    const form: CreateUserForm = {
         name: String(formData.get("name") || ""),
         email: String(formData.get("email") || ""),
         password: String(formData.get("password") || ""),
         role: formData.get("role") as "student" | "instructor",
+        gender: formData.get("gender") as "male" | "female",
     };
 
     // validation before calling db
@@ -19,8 +20,8 @@ const registerUser = async (_: any, formData: FormData) => {
 
     // form data is valid 
     try {
-        const user = await createUser(form);
-        return { success: true, user, timestamp: Date.now() };
+        await createUser(form);
+        return { success: true, message: 'created successfully', timestamp: Date.now() };
     } catch (error: any) {
         return errorHandler(error);
     }

@@ -1,5 +1,5 @@
 "use client";
-import { registerUser } from "@/actions/auth";
+import { registerUser } from "@/actions/auth-actions";
 import { displaySuccess, displayError } from "@/lib/toast";
 import { startTransition, useActionState, useEffect, useRef } from "react";
 
@@ -9,6 +9,7 @@ export default function RegisterForm() {
 
     const handleSubmit = function (e: any) {
         e.preventDefault();
+        
         startTransition(() => {
             formAction(new FormData(e.target));
         });
@@ -19,7 +20,7 @@ export default function RegisterForm() {
             displayError(state.message, 'RegisterUser')
 
         if (state.success) {
-            displaySuccess('Registered Successfully', 'RegisterUser')
+            displaySuccess('Created Successfully', 'RegisterUser')
             formRef.current?.reset();
         }
 
@@ -52,6 +53,12 @@ export default function RegisterForm() {
                 <option className="text-black" value="role" disabled hidden>Role</option>
                 <option className="text-black" value="student">Student</option>
                 <option className="text-black" value="instructor">Instructor</option>
+            </select>
+
+            <select defaultValue={'gender'} name="gender" className="border border-black/30 rounded p-2 w-full">
+                <option className="text-black" value="gender" disabled hidden>Gender</option>
+                <option className="text-black" value="male">Male</option>
+                <option className="text-black" value="female">Female</option>
             </select>
 
             <button
