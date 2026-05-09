@@ -2,12 +2,18 @@ import { Lesson } from "@/types/course";
 import LessonCardActions from "./LessonCardActions";
 import { getCourseLessonsAction } from "@/actions/course-actions";
 import { getSessionUserInfo } from "@/lib/authorization";
+import { getLessonsCompletionStatusAction } from "@/actions/student-courses-actions";
 
 export default async function LessonsSection({ courseId }: { courseId: string }) {
     const { success, message } = await getCourseLessonsAction(courseId);
-    const lessons: Lesson[] = success ? message : [];
 
+    // get all completed lessons map
+    const { success: success2, message: lessonCompletionMap } = await getLessonsCompletionStatusAction(courseId);
+
+
+    const lessons: Lesson[] = success && success2 ? message : [];
     const { role } = await getSessionUserInfo();
+
 
 
     return (
@@ -58,7 +64,7 @@ export default async function LessonsSection({ courseId }: { courseId: string })
                                         <div className="border-t my-3"></div>
 
                                         {/* Actions */}
-                                        <LessonCardActions lesson={lesson} role={role} />
+                                        <LessonCardActions lesson={lesson} isCompleted={lessonCompletionMap[lesson.id] || false} role={role!} />
                                     </div>
                                 ))}
                             </div>

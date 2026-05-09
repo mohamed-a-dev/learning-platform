@@ -91,7 +91,10 @@ export default async function Page() {
                             {
                                 role === 'student' &&
                                 <p className="text-sm text-gray-500 mb-2">
-                                    Instructor: {course.instructor?.name || "Unknown"}
+                                    <span className="font-medium text-gray-700">Instructor: </span>
+                                    <span className="text-gray-500">
+                                        {course.instructor?.name || "Unknown"}
+                                    </span>
                                 </p>
                             }
 

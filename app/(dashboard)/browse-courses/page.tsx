@@ -44,6 +44,13 @@ export default async function Page() {
                             {course.title}
                         </h2>
 
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                            <span className="font-medium text-gray-700">Instructor:</span>
+                            <span className="text-gray-500">
+                                {course.instructor?.name || "Unknown"}
+                            </span>
+                        </div>
+
                         <p className="text-black/80 mb-4 line-clamp-3 capitalize">
                             {course.description}
                         </p>

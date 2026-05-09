@@ -15,7 +15,7 @@ export default async function page({ params }: { params: Promise<{ courseId: str
 
     const { success: courseResSuccess, message: courseResMessage } = courseResponse;
     const { success: enrollmentResSuccess, message: enrollmentResMessage } = enrollmentResponse;
-    
+
     // course res
     const course: Course = courseResponse.success ? courseResponse.message : {};
     const { id, title, description, createdAt, updatedAt, _count } = course;
@@ -42,6 +42,16 @@ export default async function page({ params }: { params: Promise<{ courseId: str
                                 <h1 className="capitalize text-3xl font-bold text-gray-900">
                                     {title}
                                 </h1>
+
+                                {/* student */}
+                                {role === "student" && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                        <span className="font-medium text-gray-700">Instructor:</span>
+                                        <span className="text-gray-500">
+                                            {course.instructor?.name || "Unknown"}
+                                        </span>
+                                    </div>
+                                )}
 
                                 <p className="capitalize text-gray-600 mt-2">
                                     {description}

@@ -1,9 +1,9 @@
 'use server'
 import { errorHandler } from "@/lib/prismaErrors";
-import { createEnrollment, createLessonCompleted, deleteEnrollment, getBrowseCourses, getCompletedLessonsCount, getCoursesCount, getEnrollment, getNextLessonToContinue, getStudentCourses } from "@/services/student-courses-services"
+import { createEnrollment, createLessonCompleted, deleteEnrollment, deleteLessonCompleted, getBrowseCourses, getCompletedCoursesCount, getCompletedLessonsCount, getCoursesCount, getEnrollment, getLessonsCompletionStatus, getStudentCourses } from "@/services/student-courses-services"
 import { revalidatePath } from "next/cache";
 
-const getCoursesCountAction = async () => {
+const getStudentCoursesCountAction = async () => {
     try {
         const coursesCount = getCoursesCount();
         return { success: true, message: coursesCount }
@@ -15,7 +15,16 @@ const getCoursesCountAction = async () => {
 const getCompletedLessonsCountAction = async () => {
     try {
         const completedLessonsCount = getCompletedLessonsCount();
-        return { success: true, completedLessonsCount }
+        return { success: true, message: completedLessonsCount }
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+const getCompletedCoursesCountAction = async () => {
+    try {
+        const completedCoursesCount = getCompletedCoursesCount();
+        return { success: true, message: completedCoursesCount }
     } catch (error: any) {
         return errorHandler(error);
     }
@@ -72,29 +81,52 @@ const getStudentCoursesAction = async () => {
 const createLessonCompletedAction = async (lessonId: string) => {
     try {
         const createdCompletedLesson = await createLessonCompleted(lessonId);
-        return { success: true, createdCompletedLesson }
+        revalidatePath('/courses')
+        return { success: true, message: createdCompletedLesson }
     } catch (error: any) {
         return errorHandler(error);
     }
 }
 
-const getNextLessonToContinueAction = async (courseId: string) => {
+const deleteLessonCompletedAction = async (lessonId: string) => {
     try {
-        const nextLesson = await getNextLessonToContinue(courseId);
-        return { success: true, nextLesson }
+        const deletedLesson = await deleteLessonCompleted(lessonId);
+        revalidatePath('/courses')
+        return { success: true, message: deletedLesson }
     } catch (error: any) {
         return errorHandler(error);
     }
 }
+
+const getLessonsCompletionStatusAction = async (courseId: string) => {
+    try {
+        const lessonCompletionMap = await getLessonsCompletionStatus(courseId);
+        return { success: true, message: lessonCompletionMap }
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+// const getNextLessonToContinueAction = async (courseId: string) => {
+//     try {
+//         const nextLesson = await getNextLessonToContinue(courseId);
+//         return { success: true, nextLesson }
+//     } catch (error: any) {
+//         return errorHandler(error);
+//     }
+// }
 
 export {
-    getCoursesCountAction,
+    getStudentCoursesCountAction,
     getCompletedLessonsCountAction,
+    getCompletedCoursesCountAction,
     createEnrollmentAction,
     getEnrollmentAction,
     deleteEnrollmentAction,
     getBrowseCoursesAction,
     getStudentCoursesAction,
     createLessonCompletedAction,
-    getNextLessonToContinueAction,
+    deleteLessonCompletedAction,
+    getLessonsCompletionStatusAction,
+    // getNextLessonToContinueAction,
 }

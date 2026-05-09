@@ -26,6 +26,42 @@ const getCompletedLessonsCount = async () => {
     return completedLessonsCount;
 }
 
+const getCompletedCoursesCount = async () => {
+    const { id: userId } = await getSessionUserInfo();
+
+    const enrollments = await prisma.enrollment.findMany({
+        where: { userId },
+        include: {
+            course: {
+                include: {
+                    lessons: true,
+                },
+            },
+        },
+    });
+
+    const completedLessons = await prisma.lessonCompleted.findMany({
+        where: { userId },
+    });
+
+    const completedSet = new Set(
+        completedLessons.map((l) => l.lessonId)
+    );
+
+
+    const completedCoursesCount = enrollments.filter((enrollment) => {
+        const courseLessons = enrollment.course.lessons;
+
+        if (courseLessons.length === 0) return false;
+
+        return courseLessons.every((lesson) =>
+            completedSet.has(lesson.id)
+        );
+    }).length;
+
+    return completedCoursesCount;
+};
+
 // ------------------------------------Browse Courses page------------------------------------
 const getBrowseCourses = async () => {
     const { id: studentId } = await getSessionUserInfo();
@@ -84,16 +120,26 @@ const getEnrollment = async (courseId: string) => {
 const deleteEnrollment = async (courseId: string) => {
     const { id: studentId } = await getSessionUserInfo();
 
-    const enrollment = await prisma.enrollment.delete({
-        where: {
-            userId_courseId: {
-                userId: studentId!,
-                courseId,
-            }
-        }
-    });
+    const [deletedEnrollment, deletedCompletedLessons] = await prisma.$transaction([
+        prisma.enrollment.delete({
+            where: {
+                userId_courseId: {
+                    userId: studentId!,
+                    courseId,
+                },
+            },
+        }),
 
-    return enrollment;
+        prisma.lessonCompleted.deleteMany({
+            where: {
+                userId: studentId,
+                lesson: {
+                    courseId,
+                },
+            },
+        }),
+    ]);
+    return deletedEnrollment;
 }
 
 // ------------------------------------My Courses page------------------------------------
@@ -103,17 +149,34 @@ const getStudentCourses = async () => {
     const enrollments = await prisma.enrollment.findMany({
         where: {
             userId: studentId
-        }
-        ,
+        },
+
+        orderBy: {
+            createdAt: 'desc'
+        },
+
         include: {
-            course: true
+            course: {
+                include: {
+                    instructor: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
+                }
+            }
         }
     });
-    return enrollments.map((obj) => obj.course);
-}
+
+    const courses = enrollments.map((obj) => obj.course);
+
+    return courses;
+};
 
 // ------------------------------------Course page------------------------------------
-// set lesson as completed
+// mark lesson as completed
 const createLessonCompleted = async (lessonId: string) => {
     const { id: studentId } = await getSessionUserInfo();
 
@@ -144,6 +207,43 @@ const createLessonCompleted = async (lessonId: string) => {
     return createdCompletedLesson;
 };
 
+// mark lesson as uncompleted
+const deleteLessonCompleted = async (lessonId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+    const unCompletedLesson = await prisma.lessonCompleted.deleteMany({
+        where: {
+            userId: studentId!,
+            lessonId,
+        },
+    });
+
+    return unCompletedLesson;
+};
+
+// get all lessons completeion status
+const getLessonsCompletionStatus = async (courseId: string) => {
+    const { id: studentId } = await getSessionUserInfo();
+
+    const completedLessons = await prisma.lessonCompleted.findMany({
+        where: {
+            userId: studentId!,
+            lesson: {
+                courseId,
+            },
+        },
+        select: {
+            lessonId: true,
+        },
+    });
+
+    const lessonCompletionMap: Record<string, boolean> = {};
+
+    completedLessons.forEach((l) => {
+        lessonCompletionMap[l.lessonId] = true;
+    });
+
+    return lessonCompletionMap;
+};
 
 // get next lesson | continue button
 const getNextLessonToContinue = async (courseId: string) => {
@@ -176,11 +276,14 @@ const getNextLessonToContinue = async (courseId: string) => {
 export {
     getCoursesCount,
     getCompletedLessonsCount,
+    getCompletedCoursesCount,
     getBrowseCourses,
     createEnrollment,
     getEnrollment,
     deleteEnrollment,
     getStudentCourses,
+    createLessonCompleted,
+    deleteLessonCompleted,
+    getLessonsCompletionStatus,
     getNextLessonToContinue,
-    createLessonCompleted
 }
