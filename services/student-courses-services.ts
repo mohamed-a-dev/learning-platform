@@ -62,6 +62,129 @@ const getCompletedCoursesCount = async () => {
     return completedCoursesCount;
 };
 
+
+const getCourseProgress = async () => {
+    const { id: studentId } = await getSessionUserInfo();
+
+    const enrollments = await prisma.enrollment.findMany({
+        where: {
+            userId: studentId,
+        },
+        include: {
+            course: {
+                include: {
+                    lessons: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        take: 5,
+    });
+
+    // 2. كل الدروس المكتملة للطالب مرة واحدة (performance optimization)
+    const completedLessons = await prisma.lessonCompleted.findMany({
+        where: {
+            userId: studentId,
+        },
+        select: {
+            lessonId: true,
+        },
+    });
+
+    const completedSet = new Set(
+        completedLessons.map((l) => l.lessonId)
+    );
+
+    // 3. حساب progress لكل كورس
+    return enrollments.map((enrollment) => {
+        const course = enrollment.course;
+
+        const totalLessons = course.lessons.length;
+
+        const completedCount = course.lessons.filter((lesson) =>
+            completedSet.has(lesson.id)
+        ).length;
+
+        const progress =
+            totalLessons === 0 ? 0 : (completedCount / totalLessons) * 100;
+
+        return {
+            name: course.title,
+            progress: Number(progress.toFixed(2)),
+        };
+    });
+}
+
+const getLessonsProgress = async () => {
+    const { id: studentId } = await getSessionUserInfo();
+
+    // كل الكورسات اللي الطالب مشترك فيها
+    const enrollments = await prisma.enrollment.findMany({
+        where: {
+            userId: studentId,
+        },
+        include: {
+            course: {
+                include: {
+                    lessons: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    // كل الدروس المكتملة للطالب
+    const completedLessons = await prisma.lessonCompleted.findMany({
+        where: {
+            userId: studentId,
+        },
+        select: {
+            lessonId: true,
+        },
+    });
+
+    const completedSet = new Set(
+        completedLessons.map((l) => l.lessonId)
+    );
+
+    let totalLessons = 0;
+    let completedCount = 0;
+
+    enrollments.forEach((enrollment) => {
+        const lessons = enrollment.course.lessons;
+
+        totalLessons += lessons.length;
+
+        completedCount += lessons.filter((l) =>
+            completedSet.has(l.id)
+        ).length;
+    });
+
+    const remainingCount = totalLessons - completedCount;
+
+    return [
+        {
+            name: "Completed",
+            value: completedCount,
+        },
+        {
+            name: "Remaining",
+            value: remainingCount,
+        },
+    ];
+};
+
+
+
 // ------------------------------------Browse Courses page------------------------------------
 const getBrowseCourses = async () => {
     const { id: studentId } = await getSessionUserInfo();
@@ -89,6 +212,7 @@ const getBrowseCourses = async () => {
 
     return courses;
 };
+
 
 const createEnrollment = async (courseId: string) => {
     const { id: studentId } = await getSessionUserInfo();
@@ -277,6 +401,8 @@ export {
     getCoursesCount,
     getCompletedLessonsCount,
     getCompletedCoursesCount,
+    getCourseProgress,
+    getLessonsProgress,
     getBrowseCourses,
     createEnrollment,
     getEnrollment,

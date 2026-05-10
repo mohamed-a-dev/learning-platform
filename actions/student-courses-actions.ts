@@ -1,6 +1,6 @@
 'use server'
 import { errorHandler } from "@/lib/prismaErrors";
-import { createEnrollment, createLessonCompleted, deleteEnrollment, deleteLessonCompleted, getBrowseCourses, getCompletedCoursesCount, getCompletedLessonsCount, getCoursesCount, getEnrollment, getLessonsCompletionStatus, getStudentCourses } from "@/services/student-courses-services"
+import { createEnrollment, createLessonCompleted, deleteEnrollment, deleteLessonCompleted, getBrowseCourses, getCompletedCoursesCount, getCompletedLessonsCount, getCourseProgress, getCoursesCount, getEnrollment, getLessonsCompletionStatus, getLessonsProgress, getStudentCourses } from "@/services/student-courses-services"
 import { revalidatePath } from "next/cache";
 
 const getStudentCoursesCountAction = async () => {
@@ -25,6 +25,25 @@ const getCompletedCoursesCountAction = async () => {
     try {
         const completedCoursesCount = getCompletedCoursesCount();
         return { success: true, message: completedCoursesCount }
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+
+const getCourseProgressAction = async () => {
+    try {
+        const coursesProgressList = await getCourseProgress();
+        return { success: true, message: coursesProgressList }
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+const getLessonsProgressAction = async () => {
+    try {
+        const lessonsProgressList = await getLessonsProgress();
+        return { success: true, message: lessonsProgressList }
     } catch (error: any) {
         return errorHandler(error);
     }
@@ -120,6 +139,8 @@ export {
     getStudentCoursesCountAction,
     getCompletedLessonsCountAction,
     getCompletedCoursesCountAction,
+    getCourseProgressAction,
+    getLessonsProgressAction,
     createEnrollmentAction,
     getEnrollmentAction,
     deleteEnrollmentAction,

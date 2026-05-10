@@ -1,14 +1,35 @@
 import { getCoursesCountAction, getLessonsCountAction, getStudentsCountAction } from "@/actions/instructor-courses-actions";
-import { getCompletedCoursesCountAction, getCompletedLessonsCountAction, getStudentCoursesCountAction } from "@/actions/student-courses-actions";
-import EnrollmentsBarChart from "@/components/Dashboard/CourseEnrollmentChart";
-import StatCard from "@/components/Dashboard/StatCard";
-import StudentsLineChart from "@/components/Dashboard/StudentsGrowsChart";
+import { getCompletedCoursesCountAction, getCompletedLessonsCountAction, getCourseProgressAction, getLessonsProgressAction, getStudentCoursesCountAction } from "@/actions/student-courses-actions";
+import EnrollmentsBarChart from "@/components/Dashboard/instructor/CourseEnrollmentChart";
+import StatCard from "@/components/Dashboard/instructor/StatCard";
+import StudentsLineChart from "@/components/Dashboard/instructor/StudentsGrowsChart";
+import ProgressChart from "@/components/Dashboard/student/ProgressCharts";
+import RemainingLessonsChart from "@/components/Dashboard/student/RemainingLessonsChart";
 import { getSessionUserInfo } from "@/lib/authorization";
+
+
+const colors = [
+    "#3b82f6", // blue
+    "#8b5cf6", // purple
+    "#22c55e", // green
+    "#f59e0b", // amber
+    "#ef4444", // red
+];
+
+type CourseProgress = {
+    courseId: string;
+    title: string;
+    progress: number;
+};
+
+
 
 export default async function Dashboard() {
     const { role } = await getSessionUserInfo();
 
     let stats;
+    let coursesProgressData;
+    let lessonsProgressData;
 
     if (role === 'instructor') {
         const [students, courses, lessons] = await Promise.all([
@@ -26,10 +47,12 @@ export default async function Dashboard() {
 
 
     if (role === 'student') {
-        const [courses, completedCourses, completedLessons] = await Promise.all([
+        const [courses, completedCourses, completedLessons, coursesProgressList, lessonsProgressList] = await Promise.all([
             getStudentCoursesCountAction(),
             getCompletedCoursesCountAction(),
             getCompletedLessonsCountAction(),
+            getCourseProgressAction(),
+            getLessonsProgressAction(),
         ]);
 
         stats = {
@@ -37,6 +60,9 @@ export default async function Dashboard() {
             courses,
             completedLessons,
         }
+
+        coursesProgressData = coursesProgressList.message.map((record: CourseProgress, i: number) => ({ ...record, fill: colors[i] }));
+        lessonsProgressData = lessonsProgressList.message;
     }
 
 
@@ -82,13 +108,22 @@ export default async function Dashboard() {
                 }
             </div>
 
-
-
-
             <article className="flex flex-col md:flex-row gap-3 md:items-center">
-                <StudentsLineChart />
-                <EnrollmentsBarChart />
+                {
+                    role === 'instructor' ?
+                        <>
+                            <StudentsLineChart />
+                            <EnrollmentsBarChart />
+                        </>
+
+                        :
+                        <>
+                            <ProgressChart data={coursesProgressData} />
+                            <RemainingLessonsChart data={lessonsProgressData} />
+                        </>
+                }
             </article>
+
         </section>
     );
 }
