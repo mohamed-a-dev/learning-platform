@@ -40,7 +40,7 @@ export default function Navbar({ session }: { session: Session }) {
     }, []);
 
     return (
-        <nav className="px-5 py-2 sticky top-0 bg-white flex items-center justify-between">
+        <nav className="px-5 py-2 sticky top-0 bg-white flex items-center justify-between z-1">
             <button
                 onClick={() => dispatch(toggleSidebar())}
                 className="p-1 text-4xl cursor-pointer hover:bg-blue-600 hover:text-white rounded duration-200"

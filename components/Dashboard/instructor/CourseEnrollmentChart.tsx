@@ -1,36 +1,62 @@
 "use client";
 
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  PieChart,
+  Pie,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-const data = [
-  { name: "React", enrollments: 120 },
-  { name: "Next.js", enrollments: 90 },
-  { name: "Node", enrollments: 70 },
-  { name: "Mongo", enrollments: 50 },
-  { name: "Prisma", enrollments: 65 },
+type CourseEnrollment = {
+  name: string;
+  enrollments: number;
+  fill?: string;
+};
+
+type Props = {
+  data: CourseEnrollment[];
+};
+
+const COLORS = [
+  "#6366F1",
+  "#22C55E",
+  "#F59E0B",
+  "#EF4444",
+  "#06B6D4",
+  "#A855F7",
+  "#EC4899",
 ];
 
-export default function EnrollmentsBarChart() {
-  return (
-    <div className="h-80 md:flex-1 bg-white rounded-xl shadow-md hover:shadow-xl p-4 duration-200">
-      <h2 className="font-semibold tracking-normal mb-4">Course Enrollments</h2>
+export default function EnrollmentsPieChart({ data }: Props) {
+  const chartData = data.map((item, index) => ({
+    ...item,
+    fill: COLORS[index % COLORS.length],
+  }));
 
-      <ResponsiveContainer width="100%" height="90%">
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
+  return (
+    <div className="overflow-scroll h-90 md:w-full bg-white rounded-xl shadow-md hover:shadow-xl p-4 duration-200">
+      <h2 className="font-semibold mb-4">Course Enrollments Distribution</h2>
+
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="enrollments"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            label
+          />
+
           <Tooltip />
-          <Bar dataKey="enrollments" fill="#000" />
-        </BarChart>
+          <Legend
+            verticalAlign="bottom"
+            height={100}
+            wrapperStyle={{ paddingTop: 30 }}
+          />
+        </PieChart>
       </ResponsiveContainer>
     </div>
   );

@@ -18,26 +18,29 @@ const nextAuth = NextAuth({
             },
 
             async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) return null;
+
                 const user = await prisma.user.findUnique({
-                    where: { email: String(credentials?.email) },
+                    where: { email: String(credentials.email) },
                 });
 
                 if (!user) return null;
 
                 const isPasswordCorrect = await bcrypt.compare(
-                    credentials?.password as string,
+                    credentials.password as string,
                     user.password
                 );
 
-                // if (!isPasswordCorrect) return null;
+                if (!isPasswordCorrect) return null;
 
                 return user;
             },
         }),
     ],
+
     callbacks: {
         async jwt({ token, user, trigger, session }) {
-            // أول login
+            // after login
             if (user) {
                 token.role = user.role;
                 token.gender = user.gender;
@@ -45,7 +48,7 @@ const nextAuth = NextAuth({
                 token.name = user.name;
             }
 
-            // لما تعمل session.update()
+            // when session.update()
             if (trigger === "update" && session) {
                 if (session.name) token.name = session.name;
                 if (session.role) token.role = session.role;

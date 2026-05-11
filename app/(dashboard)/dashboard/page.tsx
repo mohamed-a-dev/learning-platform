@@ -1,7 +1,7 @@
-import { getCoursesCountAction, getLessonsCountAction, getStudentsCountAction } from "@/actions/instructor-courses-actions";
+import { getCoursesCountAction, getCoursesEnrollmentsAction, getLessonsCountAction, getStudentsCountAction, getStudentsGrowthAction } from "@/actions/instructor-courses-actions";
 import { getCompletedCoursesCountAction, getCompletedLessonsCountAction, getCourseProgressAction, getLessonsProgressAction, getStudentCoursesCountAction } from "@/actions/student-courses-actions";
 import EnrollmentsBarChart from "@/components/Dashboard/instructor/CourseEnrollmentChart";
-import StatCard from "@/components/Dashboard/instructor/StatCard";
+import StatCard from "@/components/Dashboard/StatCard";
 import StudentsLineChart from "@/components/Dashboard/instructor/StudentsGrowsChart";
 import ProgressChart from "@/components/Dashboard/student/ProgressCharts";
 import RemainingLessonsChart from "@/components/Dashboard/student/RemainingLessonsChart";
@@ -30,12 +30,16 @@ export default async function Dashboard() {
     let stats;
     let coursesProgressData;
     let lessonsProgressData;
+    let studentsGrowthData;
+    let coursesEnrollmentsData;
 
     if (role === 'instructor') {
-        const [students, courses, lessons] = await Promise.all([
+        const [students, courses, lessons, studentsGrowth, coursesEnrollments] = await Promise.all([
             getStudentsCountAction(),
             getCoursesCountAction(),
             getLessonsCountAction(),
+            getStudentsGrowthAction(),
+            getCoursesEnrollmentsAction()
         ]);
 
         stats = {
@@ -43,11 +47,14 @@ export default async function Dashboard() {
             courses,
             lessons,
         }
+
+        studentsGrowthData = studentsGrowth.message;
+        coursesEnrollmentsData = coursesEnrollments.message;
     }
 
 
     if (role === 'student') {
-        const [courses, completedCourses, completedLessons, coursesProgressList, lessonsProgressList] = await Promise.all([
+        const [courses, completedCourses, completedLessons, coursesProgress, lessonsProgress] = await Promise.all([
             getStudentCoursesCountAction(),
             getCompletedCoursesCountAction(),
             getCompletedLessonsCountAction(),
@@ -61,8 +68,8 @@ export default async function Dashboard() {
             completedLessons,
         }
 
-        coursesProgressData = coursesProgressList.message.map((record: CourseProgress, i: number) => ({ ...record, fill: colors[i] }));
-        lessonsProgressData = lessonsProgressList.message;
+        coursesProgressData = coursesProgress.message.map((record: CourseProgress, i: number) => ({ ...record, fill: colors[i] }));
+        lessonsProgressData = lessonsProgress.message;
     }
 
 
@@ -108,12 +115,12 @@ export default async function Dashboard() {
                 }
             </div>
 
-            <article className="flex flex-col md:flex-row gap-3 md:items-center">
+            <article className="flex flex-col md:flex-row flex-wrap gap-5 md:items-center">
                 {
                     role === 'instructor' ?
                         <>
-                            <StudentsLineChart />
-                            <EnrollmentsBarChart />
+                            <StudentsLineChart data={studentsGrowthData} />
+                            <EnrollmentsBarChart data={coursesEnrollmentsData} />
                         </>
 
                         :

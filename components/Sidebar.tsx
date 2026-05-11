@@ -5,6 +5,8 @@ import { FaBook, FaBookOpen } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { IoSettings } from "react-icons/io5";
 import { AiOutlineLogout } from "react-icons/ai";
+import { IoPeople } from "react-icons/io5";
+
 import Logo from './Logo';
 import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -23,7 +25,8 @@ export default function Sidebar({ session }: { session: Session }) {
 
     const instructorLinks = [
         { href: '/dashboard', name: 'dashboard', icon: <MdDashboard /> },
-        { href: '/courses', name: 'my courses', icon: <FaBook /> },
+        { href: '/my-courses', name: 'my courses', icon: <FaBook /> },
+        { href: '/my-students', name: 'my students', icon: <IoPeople /> },
         { href: '/create-course', name: 'create course', icon: <FaPlus /> },
         { href: '/settings', name: 'account settings', icon: <IoSettings /> },
     ]
@@ -31,7 +34,7 @@ export default function Sidebar({ session }: { session: Session }) {
     const studentLinks = [
         { href: '/dashboard', name: 'dashboard', icon: <MdDashboard /> },
         { href: '/browse-courses', name: 'browse courses', icon: <FaBookOpen /> },
-        { href: '/courses', name: 'my courses', icon: <FaBook /> },
+        { href: '/my-courses', name: 'my courses', icon: <FaBook /> },
         { href: '/settings', name: 'account settings', icon: <IoSettings /> },
     ]
 

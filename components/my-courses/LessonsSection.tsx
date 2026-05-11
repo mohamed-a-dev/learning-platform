@@ -42,12 +42,12 @@ export default async function LessonsSection({ courseId }: { courseId: string })
                                 {lessons.map((lesson) => (
                                     <div
                                         key={lesson.id}
-                                        className="border border-gray-300 rounded-xl p-4 bg-white hover:shadow-xl duration-300"
+                                        className="border border-gray-300 rounded-xl p-4 bg-white hover:shadow-xl duration-300 flex flex-col h-full"
                                     >
                                         {/* Top Row */}
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-800 leading-snug line-clamp-2">
+                                                <h3 className="text-lg font-semibold text-gray-800 leading-snug line-clamp-3">
                                                     {lesson.title}
                                                 </h3>
                                                 <p className="text-sm text-gray-400 mt-1 line-clamp-2">
@@ -61,10 +61,12 @@ export default async function LessonsSection({ courseId }: { courseId: string })
                                         </div>
 
                                         {/* Divider */}
-                                        <div className="border-t my-3"></div>
+                                        {/* <div className="border-t-3"></div> */}
 
                                         {/* Actions */}
-                                        <LessonCardActions lesson={lesson} isCompleted={lessonCompletionMap[lesson.id] || false} role={role!} />
+                                        <div className="mt-auto pt-3 border-t">
+                                            <LessonCardActions lesson={lesson} isCompleted={lessonCompletionMap[lesson.id] || false} role={role!} />
+                                        </div>
                                     </div>
                                 ))}
                             </div>

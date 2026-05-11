@@ -13,7 +13,7 @@ export default function CourseEnrollToggleButton({ courseId, isEnrolled }: { cou
         ? (pending ? "Enrolling..." : "Enroll Course")
         : (pending ? "Withdrawing..." : "Withdraw Course");
 
-    const enrollToggleButtonStyle = pathname === '/courses' || pathname === '/browse-courses' ?
+    const enrollToggleButtonStyle = pathname === '/my-courses' || pathname === '/browse-courses' ?
         'flex-1 active:scale-80 px-3 py-1.5 text-sm flex justify-center items-center gap-2 cursor-pointer bg-blue-600 disabled:bg-blue-900 text-white rounded-lg hover:bg-blue-700 duration-150'
         :
         'mt-5 md:mt-0 w-full md:w-auto active:scale-80 px-4 py-2 flex justify-center items-center gap-2 cursor-pointer bg-blue-600 disabled:bg-blue-900 text-white rounded-lg hover:bg-blue-700 duration-150'

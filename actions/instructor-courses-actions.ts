@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { errorHandler } from "@/lib/prismaErrors";
 import { createCourseSchema, createLessonSchema, editCourseSchema, editLessonSchema } from "@/lib/validation/courses-validation";
 import { getCourse } from "@/services/course-services";
-import { createCourse, createLesson, deleteCourse, deleteLesson, editCourse, editLesson, getCourses, getCoursesCount, getLessonsCount, getStudentsCount } from "@/services/instructor-courses-services"
+import { createCourse, createLesson, deleteCourse, deleteLesson, editCourse, editLesson, getCourses, getCoursesCount, getCoursesEnrollments, getLessonsCount, getStudents, getStudentsCount, getStudentsGrowth } from "@/services/instructor-courses-services"
 import { CreateLesson, EditCourse, EditLesson } from "@/types/course";
 import { revalidatePath } from "next/cache";
 
@@ -30,7 +30,26 @@ const getLessonsCountAction = async () => {
         const lessonsCount = await getLessonsCount();
         return { success: true, message: lessonsCount };
     } catch (error: any) {
-        return errorHandler(error); // default case in errorHandler
+        return errorHandler(error);
+    }
+}
+
+
+const getStudentsGrowthAction = async () => {
+    try {
+        const studentsGrowthList = await getStudentsGrowth();
+        return { success: true, message: studentsGrowthList };
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+const getCoursesEnrollmentsAction = async () => {
+    try {
+        const coursesEnrollmentsList = await getCoursesEnrollments();
+        return { success: true, message: coursesEnrollmentsList };
+    } catch (error: any) {
+        return errorHandler(error);
     }
 }
 
@@ -66,6 +85,15 @@ const getCourseAction = async (courseId: string) => {
     try {
         const course = await getCourse(courseId);
         return { success: true, message: course, timestamp: Date.now() }
+    } catch (error: any) {
+        return errorHandler(error);
+    }
+}
+
+const getStudentsAction = async () => {
+    try {
+        const students = await getStudents();
+        return { success: true, message: students }
     } catch (error: any) {
         return errorHandler(error);
     }
@@ -150,6 +178,9 @@ export {
     getCoursesCountAction,
     getStudentsCountAction,
     getLessonsCountAction,
+    getStudentsGrowthAction,
+    getCoursesEnrollmentsAction,
+    getStudentsAction,
     createCourseAction,
     getInstructorCoursesAction,
     getCourseAction,

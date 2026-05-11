@@ -20,14 +20,31 @@ const getCoursesCount = async () => {
 // count of all students enrolled in all instructor courses
 const getStudentsCount = async () => {
     const { id: instructorId } = await getSessionUserInfo();
-    const studentsCount = await prisma.enrollment.count({
-        where: {
-            course: {
-                instructorId
-            }
-        }
+
+    // 1. نجيب كل كورسات المدرس
+    const courses = await prisma.course.findMany({
+        where: { instructorId },
+        select: { id: true },
     });
-    return studentsCount;
+
+    const courseIds = courses.map(c => c.id);
+
+    // enrollments
+    const enrollments = await prisma.enrollment.findMany({
+        where: {
+            courseId: {
+                in: courseIds,
+            },
+        },
+        select: {
+            userId: true,
+        },
+    });
+
+    // unique students
+    const uniqueStudents = new Set(enrollments.map(e => e.userId));
+
+    return uniqueStudents.size;
 };
 
 // count of all instructor lessons 
@@ -44,6 +61,123 @@ const getLessonsCount = async () => {
     return lessonsCount;
 };
 
+
+const getStudentsGrowth = async () => {
+    const { id: instructorId } = await getSessionUserInfo();
+
+    const today = new Date();
+
+    // نجيب بداية كل يوم من آخر 7 أيام
+    const days = Array.from({ length: 7 }).map((_, i) => {
+        const date = new Date();
+        date.setDate(today.getDate() - (6 - i));
+        date.setHours(0, 0, 0, 0);
+        return date;
+    });
+
+    // كل كورسات المدرس
+    const courses = await prisma.course.findMany({
+        where: {
+            instructorId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    const courseIds = courses.map((c) => c.id);
+
+    // كل enrollments الخاصة بالكورسات دي
+    const enrollments = await prisma.enrollment.findMany({
+        where: {
+            courseId: {
+                in: courseIds,
+            },
+            createdAt: {
+                gte: days[0],
+            },
+        },
+        select: {
+            createdAt: true,
+        },
+    });
+
+    // نحسب لكل يوم
+    const result = days.map((day, index) => {
+        const nextDay = days[index + 1] || new Date();
+
+        const count = enrollments.filter((enr) => {
+            return (
+                enr.createdAt >= day &&
+                enr.createdAt < nextDay
+            );
+        }).length;
+
+        const label = day.toLocaleDateString("en-US", {
+            weekday: "short",
+        });
+
+        return {
+            name: label,
+            students: count,
+        };
+    });
+
+    return result;
+
+}
+
+const getCoursesEnrollments = async () => {
+    const { id: instructorId } = await getSessionUserInfo();
+
+    const courses = await prisma.course.findMany({
+        where: {
+            instructorId,
+        },
+        include: {
+            enrollments: true,
+        },
+    });
+
+    return courses.map((course) => ({
+        name: course.title,
+        enrollments: course.enrollments.length,
+    }));
+};
+
+
+// ----------------- my-students page ---------------------
+const getStudents = async () => {
+    const { id: instructorId } = await getSessionUserInfo();
+
+    const enrollments = await prisma.enrollment.findMany({
+        where: {
+            course: {
+                instructorId,
+            },
+        },
+
+        distinct: ["userId"],
+
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+        },
+    });
+
+    const students = enrollments.map((enrollment) => ({
+        id: enrollment.user.id,
+        name: enrollment.user.name,
+        email: enrollment.user.email,
+    }));
+
+    return students;
+}
 
 // ------------------------------------Create Page------------------------------------
 const createCourse = async (course: CreateCourse) => {
@@ -277,10 +411,14 @@ const editLesson = async (lessonId: string, data: EditLesson) => {
 }
 
 
+
 export {
     getCoursesCount,
     getStudentsCount,
     getLessonsCount,
+    getStudentsGrowth,
+    getCoursesEnrollments,
+    getStudents,
     createCourse,
     getCourses,
     editCourse,
@@ -289,5 +427,5 @@ export {
     // getCourseLessons,
     createLesson,
     deleteLesson,
-    editLesson
+    editLesson,
 }

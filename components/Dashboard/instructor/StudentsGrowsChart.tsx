@@ -10,19 +10,20 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Mon", students: 12 },
-  { name: "Tue", students: 19 },
-  { name: "Wed", students: 25 },
-  { name: "Thu", students: 18 },
-  { name: "Fri", students: 32 },
-  { name: "Sat", students: 40 },
-  { name: "Sun", students: 28 },
-];
 
-export default function StudentsLineChart() {
+type StudentGrowth = {
+  name: string;
+  progress: number;
+  fill: string;
+};
+
+type Props = {
+  data: StudentGrowth[];
+};
+
+export default function StudentsLineChart({ data }: Props) {
   return (
-    <div className="h-80 md:flex-1 bg-white shadow-md hover:shadow-xl rounded-xl p-4 duration-200">
+    <div className="h-90 md:w-full bg-white shadow-md hover:shadow-xl rounded-xl p-4 duration-200">
       <h2 className="font-semibold tracking-normal mb-4">Students Growth</h2>
 
       <ResponsiveContainer width="100%" height="90%">

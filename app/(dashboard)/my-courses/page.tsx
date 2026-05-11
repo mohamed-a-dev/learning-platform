@@ -75,7 +75,7 @@ export default async function Page() {
 
 
             {/* Hybrid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {
                     courses.map((course) =>
 
@@ -92,7 +92,7 @@ export default async function Page() {
                                 role === 'student' &&
                                 <p className="text-sm text-gray-500 mb-2">
                                     <span className="font-medium text-gray-700">Instructor: </span>
-                                    <span className="text-gray-500">
+                                    <span className="text-gray-500 capitalize">
                                         {course.instructor?.name || "Unknown"}
                                     </span>
                                 </p>

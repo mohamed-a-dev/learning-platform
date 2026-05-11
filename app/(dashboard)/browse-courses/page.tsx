@@ -34,7 +34,7 @@ export default async function Page() {
                     </div>
             }
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {courses.map((course) => (
                     <div
                         key={course.id}
@@ -46,7 +46,7 @@ export default async function Page() {
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
                             <span className="font-medium text-gray-700">Instructor:</span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-500 capitalize">
                                 {course.instructor?.name || "Unknown"}
                             </span>
                         </div>

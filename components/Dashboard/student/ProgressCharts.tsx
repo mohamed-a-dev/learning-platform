@@ -1,14 +1,6 @@
 "use client";
 
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-    LabelList,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList, } from "recharts";
 
 type CourseProgress = {
     name: string;
@@ -21,7 +13,7 @@ type Props = {
 };
 
 export default function ProgressChart({ data }: Props) {
-    
+
     if (data.length === 0)
         return (
             <div className="h-100 md:w-3/5 bg-white rounded-xl shadow-md p-4 flex items-center justify-center text-gray-500">

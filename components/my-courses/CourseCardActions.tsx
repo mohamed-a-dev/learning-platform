@@ -31,7 +31,7 @@ export default function CourseCardActions({ course, role, isEnrolled }: { course
             <div className="flex items-center gap-2 mt-auto">
                 <Link
                     className="flex-1 active:scale-80 text-center cursor-pointer px-3 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition"
-                    href={`/courses/${courseId}`}
+                    href={`/${courseId}`}
                 >
                     View
                 </Link>
@@ -58,7 +58,7 @@ export default function CourseCardActions({ course, role, isEnrolled }: { course
             <div className="flex items-center gap-2 mt-auto">
                 <Link
                     className="flex-1 active:scale-80 text-center cursor-pointer px-3 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition"
-                    href={`/courses/${courseId}`}
+                    href={`/${courseId}`}
                 >
                     View
                 </Link>

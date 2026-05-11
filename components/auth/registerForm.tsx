@@ -9,7 +9,7 @@ export default function RegisterForm() {
 
     const handleSubmit = function (e: any) {
         e.preventDefault();
-        
+
         startTransition(() => {
             formAction(new FormData(e.target));
         });
@@ -27,35 +27,47 @@ export default function RegisterForm() {
     }, [state.timestamp])
 
     return (
-        <form ref={formRef} className="space-y-4 w-100" onSubmit={handleSubmit}>
+        <form ref={formRef} className="space-y-5 w-100" onSubmit={handleSubmit}>
 
-            <input
-                name="name"
-                placeholder="Full name"
-                className="border border-black/30 rounded p-2 w-full"
-            />
+            <div className='flex flex-col items-start gap-1'>
+                <label htmlFor="title" className='font-semibold'>Name</label>
+                <input
+                    name="name"
+                    type="text"
+                    placeholder="Full Name"
+                    className='px-3 py-2 w-full border border-black/20 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150 ease-in-out'
+                />
+            </div>
 
-            <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                className="border border-black/30 rounded p-2 w-full"
-            />
 
-            <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                className="border border-black/30 rounded p-2 w-full"
-            />
+            <div className='flex flex-col items-start gap-1'>
+                <label htmlFor="title" className='font-semibold'>Email</label>
+                <input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    className='px-3 py-2 w-full border border-black/20 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150 ease-in-out'
+                />
+            </div>
 
-            <select defaultValue={'role'} name="role" className="border border-black/30 rounded p-2 w-full">
+
+            <div className='flex flex-col items-start gap-1'>
+                <label htmlFor="title" className='font-semibold'>Password</label>
+                <input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    className='px-3 py-2 w-full border border-black/20 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150 ease-in-out'
+                />
+            </div>
+
+            <select defaultValue={'role'} name="role" className="p-2 className='px-3 py-2 w-full border border-black/20 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150 ease-in-out">
                 <option className="text-black" value="role" disabled hidden>Role</option>
                 <option className="text-black" value="student">Student</option>
                 <option className="text-black" value="instructor">Instructor</option>
             </select>
 
-            <select defaultValue={'gender'} name="gender" className="border border-black/30 rounded p-2 w-full">
+            <select defaultValue={'gender'} name="gender" className="p-2 className='px-3 py-2 w-full border border-black/20 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150 ease-in-out">
                 <option className="text-black" value="gender" disabled hidden>Gender</option>
                 <option className="text-black" value="male">Male</option>
                 <option className="text-black" value="female">Female</option>
@@ -64,9 +76,14 @@ export default function RegisterForm() {
             <button
                 type="submit"
                 disabled={pending}
-                className="px-8 py-2 rounded w-full bg-blue-600 text-white cursor-pointer"
+                className="w-full flex justify-center items-center gap-1 cursor-pointer duration-150 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:cursor-not-allowed text-white rounded-lg"
             >
-                Sign Up<span className={`${pending ? 'opacity-100' : 'opacity-0'}`}>...</span>
+                <p>Sign Up</p>
+                {
+                    pending &&
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                }
+
             </button>
         </form>
     );

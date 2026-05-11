@@ -94,7 +94,7 @@ export default function UpdateForm({ session }: { session: Session }) {
             <button
                 type='submit'
                 disabled={pending}
-                className='w-full mt-5 px-3 py-2 rounded-lg text-white text-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:cursor-not-allowed transition-colors duration-300'
+                className='w-full mt-5 px-3 cursor-pointer py-2 rounded-lg text-white text-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:cursor-not-allowed transition-colors duration-300'
             >
                 Confirm Changes
                 <span className={`${pending ? 'inline-block ml-2 animate-pulse' : 'hidden'}`}>...</span>
