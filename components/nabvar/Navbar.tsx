@@ -75,7 +75,7 @@ export default function Navbar({ session }: { session: Session }) {
 
                 <Link href="/settings" onClick={() => setShowDropdown(false)} className="py-2 px-3 w-full hover:text-red-600 hover:bg-white/20 text-start flex items-center gap-2 duration-300">
                     <IoSettings className="text-xl" />
-                   Account Settings
+                    Account Settings
                 </Link>
 
                 <button

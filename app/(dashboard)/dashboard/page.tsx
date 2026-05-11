@@ -6,6 +6,7 @@ import StudentsLineChart from "@/components/Dashboard/instructor/StudentsGrowsCh
 import ProgressChart from "@/components/Dashboard/student/ProgressCharts";
 import RemainingLessonsChart from "@/components/Dashboard/student/RemainingLessonsChart";
 import { getSessionUserInfo } from "@/lib/authorization";
+import PageHeader from "@/components/PageHeader";
 
 
 const colors = [
@@ -91,20 +92,13 @@ export default async function Dashboard() {
     return (
         <section className="p-5 space-y-5">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                    {role === 'instructor' ? "Instructor Overview" : "Student Overview"}
-                </h1>
-                <p className="text-gray-500 mt-2">
-                    {
-                        role === 'instructor' ?
-                            "A quick summary of your courses, students, and lessons"
-                            :
-                            "A quick summary of your courses, and lessons"
-                    }
-                </p>
-            </div>
-
+            <PageHeader title={role === 'instructor' ? "Instructor Overview" : "Student Overview"} description={
+                role === 'instructor' ?
+                    "A quick summary of your courses, students, and lessons"
+                    :
+                    "A quick summary of your courses, and lessons"
+            }
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
