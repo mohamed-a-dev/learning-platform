@@ -5,9 +5,9 @@ const SignIn = async () => {
 
     return (
         <section className='text-black min-h-screen'>
-            <main className='flex justify-center items-center gap-10 min-h-screen text-center'>
-                <article className="w-120 mx-auto p-8 bg-white rounded-xl border border-gray-200 shadow-sm">
-                    <h1 className='text-3xl tracking-tight font-semibold mb-5'>Sign In</h1>
+            <main className='p-5 flex justify-center items-center gap-10 min-h-screen text-center'>
+                <article className="w-120 mx-auto p-8 rounded-xl border border-gray-200 shadow-sm bg-linear-to-b from-black/5 to-white">
+                    <h1 className='text-3xl tracking-tight font-semibold mb-5'>Sign In to Learnifya</h1>
                     <LoginForm />
                     <Link href={'/sign-up'} className='mt-2 inline-block underline opacity-70'>Create Account</Link>
                 </article>

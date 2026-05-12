@@ -27,7 +27,7 @@ export default function RegisterForm() {
     }, [state.timestamp])
 
     return (
-        <form ref={formRef} className="space-y-5 w-100" onSubmit={handleSubmit}>
+        <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
 
             <div className='flex flex-col items-start gap-1'>
                 <label htmlFor="title" className='font-semibold'>Name</label>

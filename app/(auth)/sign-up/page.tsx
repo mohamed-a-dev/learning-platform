@@ -7,8 +7,8 @@ const SignUp = async () => {
 
     return (
         <section className='text-black min-h-screen'>
-            <main className='flex justify-center items-center gap-10 min-h-screen text-center'>
-                <article className="w-full max-w-md mx-auto p-8 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <main className='p-5 flex justify-center items-center gap-10 min-h-screen text-center'>
+                <article className="w-120 mx-auto p-8 bg-white rounded-xl border border-gray-200 shadow-sm bg-linear-to-b from-black/5 to-white">
                     <h1 className='text-3xl tracking-tight font-semibold mb-5'>Sign Up</h1>
                     <RegisterForm />
                     <Link href={'/sign-in'} className='mt-2 inline-block underline opacity-70'>Have an account</Link>

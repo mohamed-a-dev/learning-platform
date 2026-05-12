@@ -6,9 +6,6 @@ type Student = {
   email: string;
 };
 
-type Props = {
-  students: Student[];
-};
 
 export default async function StudentsTable() {
   const { success, message } = await getStudentsAction();

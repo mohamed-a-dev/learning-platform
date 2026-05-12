@@ -37,7 +37,7 @@ const LoginForm = () => {
             displayError('Wrong credentials', 'LoginForm')
     }
 
-    const hanleSubmit = async (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         // validation before calling db
         const result = loginSchema.safeParse(form);
@@ -56,20 +56,20 @@ const LoginForm = () => {
 
     const handleStudent = async () => {
         setLoading(loadingStates.STUDENT);
-        await handleSignIn('user-1@gmail.com', '12345678');
+        await handleSignIn('user-1@gmail.com', process.env.NEXT_PUBLIC_DEMO_PASSWORD!);
         setLoading(null);
     }
 
 
     const handleInstructor = async () => {
         setLoading(loadingStates.INSTRUCTOR);
-        await handleSignIn('mona@gmail.com', '12345678');
+        await handleSignIn('mona@gmail.com', process.env.NEXT_PUBLIC_DEMO_PASSWORD!);
         setLoading(null);
     }
 
     return (
         <>
-            <form className="space-y-5" onSubmit={hanleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className='flex flex-col items-start gap-1'>
                     <label htmlFor="title" className='font-semibold'>Email</label>
                     <input
