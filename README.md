@@ -45,10 +45,12 @@ The platform provides separate dashboards for students and instructors with auth
 - TypeScript
 - Tailwind CSS
 
+- 
 ### Backend
-- Next.js Server Actions / API Routes
-- Prisma ORM
-- PostgreSQL
+- Next.js Server Actions for backend operations
+- Service Layer pattern for business logic separation
+- Prisma ORM for database access
+- PostgreSQL relational database
 
 ### Authentication
 - NextAuth.js / JWT Authentication
