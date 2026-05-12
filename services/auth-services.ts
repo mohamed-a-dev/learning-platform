@@ -1,6 +1,6 @@
 'use server'
 import prisma from "@/lib/prisma";
-import { Gender, Role } from "@/app/generated/prisma/enums";
+import { Gender, Role } from "@/app/prisma/enums";
 import { CreateUserForm } from "@/types/user";
 import bcrypt from "bcrypt";
 
